@@ -6,7 +6,7 @@ struct Link;
 struct Node {
 	double x, y;
 	double vx, vy;
-
+	double fx, fy;
 
 	double friction;
 	double mass;
