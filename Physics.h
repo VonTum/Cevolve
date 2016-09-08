@@ -2,4 +2,4 @@
 
 #include "Shape.h"
 
-void tickShape(Shape* s, double time);
+void tickShape(Shape s, double time);

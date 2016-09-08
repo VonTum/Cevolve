@@ -7,70 +7,67 @@
 #include "Physics.h"
 
 
+Node createNode(double x, double y, double friction, double mass) {
+	Node n;
+	n.x = x;
+	n.y = y;
+	n.friction = friction;
+	n.mass = mass;
+	n.vx = 0;
+	n.vy = 0;
+	n.fx = 0;
+	n.fy = 0;
+	return n;
+}
+Link createLink(Node* node1, Node* node2, double preferredLength, double strength) {
+	Link l;
+	l.node1 = node1;
+	l.node2 = node2;
+	l.preferredLength = preferredLength;
+	l.strength = strength;
+	return l;
+}
+
 
 int main(int argc, char* args[]) {
-	Node nodes[3];
-	Link links[3];
+	Node nodes[6];
+	Link links[9];
 
-	nodes[0].x = 0.2;
-	nodes[0].y = 0.3;
-	nodes[0].friction = 0.5;
-	nodes[0].mass = 1;
 	
-	nodes[1].x = 0.5;
-	nodes[1].y = 0.7;
-	nodes[1].friction = 0.5;
-	nodes[1].mass = 1;
+	nodes[0] = createNode(1, 1.5, 0, 1);
+	nodes[1] = createNode(2, 1, 0, 1);
+	nodes[2] = createNode(1.5, 2, 0, 1);
+	nodes[3] = createNode(2, 2, 0, 1);
+	nodes[4] = createNode(3, 2, 0, 1);
+	nodes[5] = createNode(3, 3, 0, 1);
 
-	nodes[2].x = 0.8;
-	nodes[2].y = 0.5;
-	nodes[2].friction = 0.5;
-	nodes[2].mass = 1;
-
-	for(int i = 0; i < 3; i++){
-		nodes[i].ax = 0;
-		nodes[i].ay = 0;
-		nodes[i].vx = 0;
-		nodes[i].vy = 0;
-		nodes[i].fx = 0;
-		nodes[i].fy = 0;
-		
-	}
-
-
-
-	links[0].node1 = &nodes[0];
-	links[0].node2 = &nodes[1];
-	links[1].node1 = &nodes[0];
-	links[1].node2 = &nodes[2];
-	links[2].node1 = &nodes[1];
-	links[2].node2 = &nodes[2];
-
-	links[0].preferredLength = 0.5;
-	links[1].preferredLength = 0.5;
-	links[2].preferredLength = 0.5;
-
-	links[0].strength = 0.5;
-	links[1].strength = 0.5;
-	links[2].strength = 0.5;
+	links[0] = createLink(&nodes[0], &nodes[1], 1, 10);
+	links[1] = createLink(&nodes[0], &nodes[2], 1, 1);
+	links[2] = createLink(&nodes[1], &nodes[2], 1, 1);
+	links[3] = createLink(&nodes[1], &nodes[3], 1, 1);
+	links[4] = createLink(&nodes[1], &nodes[4], 1, 10);
+	links[5] = createLink(&nodes[2], &nodes[4], 2, 1);
+	links[6] = createLink(&nodes[4], &nodes[3], 1, 1);
+	links[7] = createLink(&nodes[0], &nodes[3], 1.5, 1);
+	links[8] = createLink(&nodes[5], &nodes[2], 1.8, 2);
+	
 
 	Shape s;
 	s.nodes = nodes;
 	s.links = links;
-	s.nodeCount = 3;
-	s.linkCount = 3;
+	s.nodeCount = 6;
+	s.linkCount = 9;
 
 	createWindow();
 
 	setShape(&s);
 	update();
 
-	
+	Node* selectedNode = NULL;
 	
 	SDL_Event e;
 	while(true) {
 		
-
 
 		bool quit = false;
 		while(SDL_PollEvent(&e)) {
@@ -87,32 +84,72 @@ int main(int argc, char* args[]) {
 				break;
 
 			case SDL_KEYDOWN:
-				if (e.key.keysym.sym == SDLK_SPACE) {
-					for (Node n : nodes) {
-						std::cout << "X:";
-						std::cout << n.x;
-						std::cout << "  Y:";
-						std::cout << n.y;
-						std::cout << "  VX:";
-						std::cout << n.vx;
-						std::cout << "  VY:";
-						std::cout << n.vy;
-						std::cout << "\n";
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:
+					s.links[1].preferredLength = 2;
+					break;
+				}
 
-					}
+
+				break;
+
+			case SDL_KEYUP:
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:
+					s.links[1].preferredLength = 1;
+					break;
 				}
 				break;
 
+			
+			case SDL_MOUSEBUTTONUP:
+				selectedNode = NULL;
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				// WIP
+
+				/*
+				{
+					Node* closestNode = NULL;
+					double closestDist = 2e30;
 
 
+					for (int i = 0; i < s.nodeCount; i++) {
+						tuple nodePos = metricToPixelCoords(s.nodes[i].x, s.nodes[i].y);
+						double distance = (e.button.x - nodePos.x) * (e.button.x - nodePos.x) + (e.button.y - nodePos.y) * (e.button.y - nodePos.y);
+						if (distance < closestDist) {
+							closestNode = &s.nodes[i];
+							closestDist = distance;
+
+						}
+					}
+					selectedNode = closestNode;
+				}
+				
+				
+				
+				//no break to update directly
+			case SDL_MOUSEMOTION:
+				if (selectedNode != NULL) {
+					tuple MousePos = pixelToMetricCoords(e.motion.x, e.motion.y);
+					selectedNode->x = MousePos.x;
+					selectedNode->y = MousePos.y;
+				}
+				
+				*/
+
+
+				break;
 			}
+			
+
 		}
 		if(quit) {
 			break;
 		}
 		
-		SDL_Delay(5);
-		tickShape(&s, 0.005);
+		SDL_Delay(1);
+		tickShape(s, 0.005);
 		update();
 		
 

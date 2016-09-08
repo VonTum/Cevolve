@@ -30,4 +30,4 @@ struct Shape {
 	
 };
 
-double getLinkLength(Link* link);
+double getLinkLength(const Link link);
