@@ -1,4 +1,4 @@
-#include "physics.h"
+#include "Physics.h"
 #include "Config.h"
 
 #include "math.h"
