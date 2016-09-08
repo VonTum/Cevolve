@@ -6,8 +6,6 @@ struct Link;
 struct Node {
 	double x, y;
 	double vx, vy;
-	double ax, ay;
-	double fx, fy;
 
 
 	double friction;
@@ -31,3 +29,5 @@ struct Shape {
 	int linkCount;
 	
 };
+
+double getLinkLength(Link* link);
